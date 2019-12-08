@@ -1,5 +1,8 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[sigplan,10pt,screen]{acmart}
+\pagestyle{plain}
+\pagenumbering{gobble}
+%\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true,printccs=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -9,6 +12,7 @@
 %% For final camera-ready submission, w/ required CCS and ACM Reference
 %\documentclass[sigplan]{acmart}\settopmatter{}
 
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08emT\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 %% Conference information
 %% Supplied to authors by publisher for camera-ready submission;
@@ -30,7 +34,7 @@
 %\copyrightyear{2018}           %% If different from \acmYear
 
 %% Bibliography style
-\bibliographystyle{ACM-Reference-Format}
+%\bibliographystyle{ACM-Reference-Format}
 %% Citation style
 %\citestyle{acmauthoryear}  %% For author/year citations
 %\citestyle{acmnumeric}     %% For numeric citations
@@ -181,8 +185,11 @@ recent GPU features, and conclude the paper with discussion about the future wor
 %% Note: \maketitle command must come after title commands, author
 %% commands, abstract environment, Computing Classification System
 %% environment and commands, and keywords command.
+
+\settopmatter{printfolios=true, printacmref=true, printccs=true}
 \maketitle
 
+{
 \input{intro}
 \input{dirgl}
 \input{async}
@@ -203,7 +210,12 @@ recent GPU features, and conclude the paper with discussion about the future wor
   %% extraction tools.
   We would like to thank Prof. Keshav Pingali for helping us to acquire the required background knowledge for this project through the course. We would also like to thank our project leaders Vishwesh Jatala and Roshan Dathathri for always being available to help us throughout the project. We would finally like to thank everyone else who directly and indirectly helped us achieve our goals of the project. 
 \end{acks}
+}
 
+\newpage
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{all}
 
 %% Bibliography
 %\bibliography{bibfile}

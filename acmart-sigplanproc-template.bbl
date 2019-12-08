@@ -1,0 +1,100 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{6}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[\protect\citeauthoryear{Cuda}{Cuda}{[n. d.]a}]%
+        {async-cuda}
+\bibfield{author}{\bibinfo{person}{Cuda}.} \bibinfo{year}{[n. d.]}\natexlab{a}.
+\newblock \bibinfo{title}{{cuda-sync}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://devblogs.nvidia.com/how-overlap-data-transfers-cuda-cc/}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Cuda}{Cuda}{[n. d.]b}]%
+        {uva-cuda}
+\bibfield{author}{\bibinfo{person}{Cuda}.} \bibinfo{year}{[n. d.]}\natexlab{b}.
+\newblock \bibinfo{title}{{cuda-sync}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#unified-virtual-address-space}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Cuda}{Cuda}{[n. d.]c}]%
+        {rdma-cuda}
+\bibfield{author}{\bibinfo{person}{Cuda}.} \bibinfo{year}{[n. d.]}\natexlab{c}.
+\newblock \bibinfo{title}{{cuda-sync}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://devblogs.nvidia.com/introduction-cuda-aware-mpi/}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Cuda}{Cuda}{[n. d.]d}]%
+        {alloc-cuda}
+\bibfield{author}{\bibinfo{person}{Cuda}.} \bibinfo{year}{[n. d.]}\natexlab{d}.
+\newblock \bibinfo{title}{{kv: trace RocksDB kv reads/writes}}.
+\newblock
+  \bibinfo{howpublished}{\url{https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY.html}}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Dathathri, Gill, Hoang, Dang, Brooks, Dryden,
+  Snir, and Pingali}{Dathathri et~al\mbox{.}}{2018}]%
+        {dathathri2018gluon}
+\bibfield{author}{\bibinfo{person}{Roshan Dathathri},
+  \bibinfo{person}{Gurbinder Gill}, \bibinfo{person}{Loc Hoang},
+  \bibinfo{person}{Hoang-Vu Dang}, \bibinfo{person}{Alex Brooks},
+  \bibinfo{person}{Nikoli Dryden}, \bibinfo{person}{Marc Snir}, {and}
+  \bibinfo{person}{Keshav Pingali}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Gluon: A communication-optimizing substrate for
+  distributed heterogeneous graph analytics}. In \bibinfo{booktitle}{\emph{ACM
+  SIGPLAN Notices}}, Vol.~\bibinfo{volume}{53}. ACM, \bibinfo{pages}{752--768}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Pai and Pingali}{Pai and Pingali}{2016}]%
+        {pai2016compiler}
+\bibfield{author}{\bibinfo{person}{Sreepathi Pai} {and} \bibinfo{person}{Keshav
+  Pingali}.} \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{A compiler for throughput optimization of graph
+  algorithms on GPUs}. In \bibinfo{booktitle}{\emph{ACM SIGPLAN Notices}},
+  Vol.~\bibinfo{volume}{51}. ACM, \bibinfo{pages}{1--19}.
+\newblock
+
+
+\end{thebibliography}

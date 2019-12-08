@@ -1,0 +1,64 @@
+This is BibTeX, Version 0.99d (TeX Live 2017)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: acmart-sigplanproc-template.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: all.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=20001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty year in async-cuda
+Warning--empty year in uva-cuda
+Warning--empty year in rdma-cuda
+Warning--empty year in alloc-cuda
+Warning--can't use both volume and number fields in dathathri2018gluon
+Warning--empty publisher in dathathri2018gluon
+Warning--empty address in dathathri2018gluon
+Warning--can't use both volume and number fields in pai2016compiler
+Warning--empty publisher in pai2016compiler
+Warning--empty address in pai2016compiler
+You've used 6 entries,
+            5719 wiz_defined-function locations,
+            1314 strings with 15251 characters,
+and the built_in function-call counts, 5453 in all, are:
+= -- 541
+> -- 208
+< -- 0
++ -- 71
+- -- 77
+* -- 378
+:= -- 650
+add.period$ -- 30
+call.type$ -- 6
+change.case$ -- 38
+chr.to.int$ -- 3
+cite$ -- 16
+duplicate$ -- 473
+empty$ -- 343
+format.name$ -- 85
+if$ -- 1198
+int.to.chr$ -- 5
+int.to.str$ -- 1
+missing$ -- 10
+newline$ -- 86
+num.names$ -- 45
+pop$ -- 232
+preamble$ -- 1
+purify$ -- 65
+quote$ -- 0
+skip$ -- 158
+stack$ -- 0
+substring$ -- 325
+swap$ -- 46
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 162
+warning$ -- 10
+while$ -- 47
+width$ -- 0
+write$ -- 143
+(There were 10 warnings)
