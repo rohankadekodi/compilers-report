@@ -1,0 +1,29 @@
+\section{Evaluation}
+\label{evaluation}
+All tests were done on an Tuxedo which has one node with 4 K80 GPUs and 2 GTX 1080 GPUs.
+We use distributed push-style and round based bfs of lonestardist. For input graphs, we used 
+social network graph, twitter40 and road network, road-USA. The former represents 
+performance of power-law graph and the latter represents performances of large dimater graph. 
+For UVA and asynchronous memory copy, we used two GPUs within single node and 
+for GPUDirect, we tested two GPUs and six GPUs within single node separately in order to understand
+network communication overheads.
+
+\subsection{Asynchronous memory copy}
+%The table X shows comparsion between synchronous and asynchronous memory copy.
+Twitter with asynchronous memory copy shows 14.1 seconds and with synchronous memory copy shows 
+14.3 seconds. Road-network with asynchronous memory copy shows 385 seconds and 
+with synchronous memory copy shows 391 seconds.
+For all input graphs, we only got from 1 to 2 percent improvements.
+This is because our projects only aim to overlap GPU-CPU and CPU-CPU memory copy.
+Moreover, we are using page-able memory which is managed by kernel.
+We expect taht we can improve this performance further by utilizing pinned memory and overlapping 
+timelines of memory copy and computation parts.
+
+\subsection{UVA}
+Twitter with UVA shows 31 seconds and without UVA shows 14 seconds.
+
+\subsection{GPUDirect: RDMA and p2p copy}
+Twitter with the combination of RDMA, UVA and asynchronous copy, and 6 nodes shows 14 seconds
+but with the original one shows 40 seconds. 
+As the network amoung is increased, we could accomplish faster performance since 
+we can remove CPU-GPU copies.
