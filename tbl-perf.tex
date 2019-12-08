@@ -1,0 +1,23 @@
+\begin{table}[!tb]
+  \small
+  \centering
+  %\ra{1.3}
+  \begin{tabular}{@{}p{125pt}p{35pt}p{50pt}@{}}
+%\begin{tabularx}{50pt}{@{}lrp{2cm}@{}}    
+    \toprule[1.2pt]
+    Property & DRAM & Intel PM \\
+    \midrule
+    Sequential read latency (ns) &  81 & 169 (2.08\myx)\\
+    Random read latency (ns) &  81 & 305 (3.76\myx)\\
+    Store + flush + fence (ns) & 86 & 91 (1.05\myx)\\
+    \midrule
+    Read bandwidth (GB/s) & 120 & 39.4 (0.33\myx)\\
+    Write bandwidth (GB/s) & 80 & 13.9 (0.17\myx)\\
+    \bottomrule[1.2pt]
+   %\end{tabularx}
+  \end{tabular}
+  \vspace{5pt} \mycaption{PM Performance}{The table shows performance
+    characteristics of DRAM, PM and the ratio of PM/DRAM, as reported by Izraelevitz et al.~\cite{pm-arxiv}.}
+  \label{tbl-pm}
+  \vspace{-15pt}
+\end{table}
