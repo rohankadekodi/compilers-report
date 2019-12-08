@@ -135,7 +135,18 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-In this project, we explore the use of modern GPU features in D-IrGL to improve the performance of communication of data between the GPUs in a single host and also across multiple hosts. In particular we explore three features that are present in modern GPUs, and we attempt to implement them in the Gluon Substrate of D-IrGL. The first feature is to use asynchronous streaming data transfers to overlap computation at the GPU with the communication between GPU and CPU. The second feature is to use Unified Virtual Addressing to use a single virtual memory address space for host as well as device, to increase the size of the graph partition at each GPU and also to simplify the implementation of Gluon without worrying about the location of data. The third feature is to use GPUDirect RDMA and Peer-to-Peer transfers between GPUs without the involvement of CPU. We implement these features in the context of the bfs\_push application, and we discuss about the challenges in implementing them and the future improvements that are possible. 
+In this project, we explore and apply three modern GPU features in D-IrGL to improve data communication performance
+among mulitple GPUs in a single host and across multiple hosts.
+The first feature is asynchronous streaming data transfers which allows the overlaping of GPU computations and GPU-CPU communications.
+The second feature is Unified Virtual Addressing (UVA) which integrates virtual memory address space of host and device.
+Through UVA, we not only increase allowable size of each graph partition on GPU, but also
+simplify data access between GPUs and CPUs.
+The third feature is GPUDirect RDMA and 
+Peer-to-Peer (P2P) data transfers among GPUs without the involvement of CPU.
+Our implementation applies these features to push style synchronizing parts on Gluon
+and we tested it with distributed bfs\_push of lonestar.
+In this paper, we introduce our implementations, discuss the challenges of the current Gluon to fully support the
+recent GPU features, and conclude the paper with discussion about the future work that could improve the performance.
 \end{abstract}
 
 
