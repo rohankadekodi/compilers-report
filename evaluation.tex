@@ -1,29 +1,45 @@
 \section{Evaluation}
 \label{evaluation}
-All tests were done on an Tuxedo which has one node with 4 K80 GPUs and 2 GTX 1080 GPUs.
-We use distributed push-style and round based bfs of lonestardist. For input graphs, we used 
-social network graph, twitter40 and road network, road-USA. The former represents 
-performance of power-law graph and the latter represents performances of large dimater graph. 
-For UVA and asynchronous memory copy, we used two GPUs within single node and 
-for GPUDirect, we tested two GPUs and six GPUs within single node separately in order to understand
-network communication overheads.
+All tests were done on Tuxedo server which consists of 4 K80 GPUs and 2 GTX 1080 GPUs.
+Among those devices, we used two GPUs within the single node.
+We tested push-style, round based bfs of lonestardist. For input graphs, we used 
+social network graph, twitter40i and livejournal, web-crawled graph, indochina-2004, and road network, road-USA. 
+For each graph, we used nodes whose degree is maximum as the start node. Each test was done three times and 
+calculated averages.
+
+\input{tbl-perf.tex}
+
+Table~\ref{tbl-op}t shows execution time (s) for each combination of input graphs and optimizations.
+The first column shows original unoptimized bfs\_push results. From the second column to the last columns,
+the results from the second column to the last columns respectively show 
+only using asynchronous memory copy, only using UVA and RDMA with UVA and asynchronous memory copy. 
+Among the techniques, asynchronous memory copy showed the best performance.
 
 \subsection{Asynchronous memory copy}
-%The table X shows comparsion between synchronous and asynchronous memory copy.
-Twitter with asynchronous memory copy shows 14.1 seconds and with synchronous memory copy shows 
-14.3 seconds. Road-network with asynchronous memory copy shows 385 seconds and 
-with synchronous memory copy shows 391 seconds.
-For all input graphs, we only got from 1 to 2 percent improvements.
-This is because our projects only aim to overlap GPU-CPU and CPU-CPU memory copy.
-Moreover, we are using page-able memory which is managed by kernel.
-We expect taht we can improve this performance further by utilizing pinned memory and overlapping 
-timelines of memory copy and computation parts.
+This technique increases only 1 to 2 percentage from the original one.
+It is expected results since we only target to overlap memory operations.
+We expect that further overlapping, for example, between operator computation and memory operation, 
+will show better results.
 
 \subsection{UVA}
-Twitter with UVA shows 31 seconds and without UVA shows 14 seconds.
+Interestingly, UVA technique decreases performance from the original bfs from about x10 to x100.
+As we discussed in the previous sections, it implies that we need to consider two factors to use this technique.
+First, the amount of pinned memory could be adjusted depending on the memory consumption.
+It can cause frequent swapping of the memory which is not allocated to UVA and managed by kernel.
+Second, frequent fetching remote memory could have critically impact on the performance.
+We expect that considering data locality could improve performance. 
+The above reasons are not verified with the experimental results even though they are obvious properties of UVA.
+Further analysis and optimization could improve performance a lot.
 
-\subsection{GPUDirect: RDMA and p2p copy}
-Twitter with the combination of RDMA, UVA and asynchronous copy, and 6 nodes shows 14 seconds
-but with the original one shows 40 seconds. 
-As the network amoung is increased, we could accomplish faster performance since 
-we can remove CPU-GPU copies.
+\subsection{GPUDirect RDMA with UVA and asynchronous CUDA memory copy}
+It shows the worst performance among other techniques.
+But it is expected. First, we cannot fully exploit multiple physical nodes to 
+optimize network overheads. The current version can support only one-to-one communication.
+Second, the MPI communication is combination of non-blocking and blocking. However, the original Gluon 
+uses fully asynchronous communications with the background specialized thread.
+Devising new GPU vector and exploiting background worker thread as the original one does could solve the above two issues.
+Third, it uses UVA. We showed that UVA without any optimization could ruin the performances.
+
+To sum up, all three techniques do not achieve better performances than the original Gluon.
+It implies that just applying technique could not improve performances a lot, but also there are many factors 
+that we can consider and improve.

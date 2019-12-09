@@ -15,5 +15,5 @@ The contributions that we make in this project are as follows:
 \begin{enumerate}
 \item We use streaming transfers~\cite{async-cuda} of data between GPU and CPU of a node to overlap computation of data at the GPU along with communication of data between different nodes via CPU. 
 \item We use Unified Virtual Addressing~\cite{uva-cuda} (UVA) to store the data of the graphs, to store larger partitions on each node. 
-\item We attempt to implement inter-GPU communication~\cite{rdma-cuda} of graph data without the involvement of CPU, among the GPUs located in a single machine as well as GPUs located across multiple machines. 
+\item We attempt to implement inter-GPU communication~\cite{rdma-cuda} without the involvement of CPU, among the GPUs located in a single machine as well as GPUs located across multiple machines. 
 \end{enumerate}

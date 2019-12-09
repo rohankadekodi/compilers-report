@@ -1,66 +1,85 @@
 \section{Inter-GPU communication without CPU Intervention}
-In this section, we talk about GPUDirect technology for communicating between GPUs without any CPU intervention via Remote Dynamic Memory Access (RDMA). Then we talk about our attempt of implementing the GPUDirect technology in the Gluon communication substrate. We further discuss about the challenges that we faced in this implementation and our insights. 
+In this section, we talk about GPUDirect technology for communicating between GPUs without any CPU intervention via Remote Dynamic Memory Access (RDMA). Then we talk about our attempt to implement the GPUDirect technology in the Gluon communication substrate.
+We further discuss about the challenges that we faced in this implementation and conclude this section with our insights. 
 
 \subsection{GPUDirect Technology}
-Message Passing Interface (MPI) is a standard API for communicating data via messages between distributed processes that is commonly used in High Performance Computing (HPC) to build applications that can scale to multi-node compute clusters. The MPI standard defines a message-passing API which covers point-to-point messages as well as collective operations like reductions. 
+Message Passing Interface (MPI) is a standard API for data communication using messages among distributed processes
+and commonly used in High Performance Computing (HPC).
+The MPI standard defines various message-passing techniques which covers from point-to-point messages to collective operations like broadcastings. 
 
 \input{fig-gpu-rdma}
 \input{fig-gpu-ptp}
 
-NVIDIA GPUDirect technologies provide high-bandwidth, low-latency communications with NVIDIA GPUs. GPUDirect is an umbrella name used to refer to several specific technologies. In the context of MPI the GPUDirect technologies cover all kinds of inter-rank communication: intra-node, inter-node, and RDMA inter-node communication. The newest GPUDirect feature is support for Remote Direct Memory Access (RDMA), with which buffers can be directly sent from the GPU memory to a network adapter without staging through host memory. This is shown in Figure~\ref{fig-rdma}. Another variant is GPUDirect for Peer-to-Peer (P2P) transfers, which can accelerate intra-node communication. Buffers can be directly copied between the memories of two GPUs in the same system with GPUDirect P2P. This is shown in Figure~\ref{fig-ptp}. 
-
-If GPUDirect RDMA or GPUDirect P2P is available, the buffers can be directly transferred from the source to the destination without touching the host memory at all. This saves a lot of overhead in serializing/deserializing data and also copying of data between CPU and GPU buffers. Furthermore, the GPUDirect technology can be used along with Unified Virtual Addresses, which further eases the implementation as we do not have to worry about the location of the buffers that are being transferred. 
+NVIDIA GPUDirect technologies provide high-bandwidth, low-latency communications with NVIDIA GPUs.
+Remote Direct Memory Access (RDMA) is one of the newest GPUDirect technology which allows GPUs to
+send its data directly to a network adapter without host memory participation. This is shown in Figure~\ref{fig-rdma}.
+Another variant of this is Peer-to-Peer (P2P) transfers, which can accelerate intra-node communication.
+Buffers can be directly copied between the memory of multiple GPUs in the same system through GPUDirect P2P. This is shown in Figure~\ref{fig-ptp}. 
+Note that GPUDirectRDMA should exploit UVA technology; Otherwise, RDMA does not work since the MPI API calls on the host side cannot
+recognize and point to GPU address.
+GPUDirect technology also can be combined with other recent technologies such as asynchronous data transfer.
 
 \subsection{GPUDirect in Gluon}
-We attempted to implement the GPUDirect P2P and GPUDirect RDMA transfers on the Gluon Substrate, for transferring the data between GPUs of a single node in the context of the bfs\_push application. As explained before, when a source node tries to transfer data to a destination node, the following steps occur:
+We attempted to implement the GPUDirect P2P and GPUDirect RDMA transfers on the Gluon Substrate
+to accomplish direct inter-GPU communications without the host.
+To support this functionality, we only aim for round based bfs\_push of lonestardist.
+Gluon code is enormous and only for the one application, we had to modify entire execution paths of Gluon substrate.
+The following lists show inter-GPU communication stages of the original Gluon.
 \begin{enumerate}
-\item The offset data and the bitset data of the updated nodes are computed at the GPU of the source
-\item The offset data, bitset data and the updated node label data are copied and serialized into a CPU buffer at the source
-\item The CPU buffer is transferred using MPI from the source
-\item The CPU buffer is received using MPI at the destination
-\item The CPU buffer at the destination is deserialized and copied to the GPU at the destination
+\item Offsets and bitsets of the updated nodes are computed at the source GPU.
+\item The computed data including the updated node label data are gathered, copied and serialized into a newly allocated CPU buffer.
+\item The CPU buffer is transferred through asynchronous MPI APIs.
+\item The sent CPU buffer is received at the destination CPU through asynchronous MPI APIs.
+\item The received CPU buffer is deserialized and copied to the destination GPU.
 \end{enumerate}
 Using the GPUDirect Technology in this workflow, we can greatly reduce the overheads in these transfers, to the following steps:
 \begin{enumerate}
-\item The offset data and the bitset data of the updated nodes are computed at the GPU of the source
-\item The offset data, bitset data and the updated node label data are serialized and transferred directly from the source GPU using MPI
-\item The offset data, bitset data and the updated node label data are directly received at the destination GPU using MPI
-\item The received data is deserialized and scattered to the proper location of GPU memory
+\item Offsets and bitsets of the updated nodes are computed at the source GPU.
+\item The computed date including the updated node label data are gathered, serialized and transferred directly from the source GPU using cuda-aware asynchronous MPI APIs supported by GPUDirect RDMA.
+\item The sent data is directly received at the destination GPU using synchronous MPI.
+\item The received data is deserialized and scattered to the proper locations. All of them are done on GPU.
 \end{enumerate}
-Note that all the steps can occur simultaneously along with other computations at the CPU of source and destination. The GPU-GPU data transfers occur asynchronously without any CPU involvement. This feature, if applied effectively, has the potential to significantly improve the performance of data transfers, as compared to the other two features.
+Note that all the steps can occur simultaneously along with other CPU computations. 
+To do this, we also additionally apply asynchronous cuda memory copy with multiple streams, which avoids CPU blocking.
+This feature, if applied effectively, has the potential to significantly improve the performance of data transfers, as compared to the other two features.
 
 \subsection{Discussion and Limitations}
-The current Gluon substrate networking works like below.
+In this section, we introduce more detailed information about implementation.
+The biggest challenge on this project was the current flow of MPI communications.
+The following lists show how the current Gluon processes MPI messages. 
 \begin{enumerate}
-\item Background thread catches and polls all OpenMPI messages received on the node.
-\item During the MPI communication, all the MPI messages are sent or received asynchronously.
-CPU buffers which are completely received through these messages are scattered across the vector of the buffer vector.
-Indices for this vector represents host IDs. For example, 1th buffer vector stores received buffers from the host 1.
-\item For each round of BFS, the Gluon substrate iterates the buffer vectors checks whether there is any completely received buffer or not.
-If there is, the buffer is popped from the deserialized, and, copied to and scattered across GPU memory. 
+\item When Gluon substrate is initialized, the background thread called worker thread starts to run in background.
+Until BFS finishes, the thread polls and catches all the OpenMPI messages received on the node.
+\item All MPI message processings are done asynchronously.
+If any message processing is done, then it moves to either receive vector or send vector.
+Each vector comprises to buffer lists indexed by the host id. For example, the first item of the receive vector
+contains buffer lists sent by the host 1.
+\item For each round of BFS, the Gluon substrate enumerates the receive vector and checks whether any host sends 
+message and the message is fully received ot not.
+If it is, the substrate starts to process the received buffer. 
 \end{enumerate}
-The main challenge that we have faced while applying GPUDirect technology is that Gluon substrate collects messages on CPU, not GPU. 
-To make it receive MPI message on GPU, we should modify entire Gluon substrate implementation.
-First, we should the CPU worker thread ignore the GPUDirect message. 
-Todo this, we fix the GPUDirect message tag to 10000. 
-When any message whose tag is 10000 arrives, the worker thread probes and ignore it.
-Second, we put GPUDirect send and receive parts on GPU side. 
-The message ignored by the worker tread finally are received by GPUDirect receive code.
-Since we cannot exploit the worker thread, we use synchronous (blocking) MPI receive.
-Finally, we replaced the previous deserialization/serialization/copy/scatter of CPU-GPU codes with 
-deserialization/serialization/scatter of GPU-GPU codes. In this case, we also apply asynchronous memory copy 
-and UVA technologies.
 
-Due to the current limitation of Gluon substrate, 
-we could not fully apply GPUDirect technologies.
-However, in the future, we expect that we can support full GPUDirect by replacing the network interface. 
+All the above sequences are performed on \textit{CPU}.
+However, GPUDirect messages should be received by GPU, not CPU.
+To do this, GPU buffers should be preallocated before message receives with proper size, and 
+gathered by the worker thread.
+In addition, we need a GPU vector type to store and handle send and receive messages invoked dynamically. 
+We can reuse the current Gluon network system in the future, but for this project, 
+we just focused on the basic GPUDirect RDMA supports.
+First, we use one fixed tag, 10000, for OpenMPI GPUDirect messages and make the worker thread ignore them.
+Second, we remove the original serialization/deserialization/copy/scatter codes for CPU-GPU communications and 
+replace them to GPU-GPU gather and scatter communications. In this case, we also serialize and deserialize 
+message in order to avoid complex network system. But it is done only on GPU, not CPU.
+Finally, the main thread requests MPI send or receive the serialized buffer messages, not the worker thread.
 
-
-
-
-
-
-
-
-
-
+Our current implementation is the first attempts to support GPUDirect techniques on Gluon.
+Therefore, it has several limitations, but also implies that there are lots of rooms for improvements.
+First, since we could not collect GPU data to be sent or to be received, due to the shortage of 
+stable GPU vector type, we only aimed for one-to-one GPU communication.
+Therefore, in the future, we could improve and extend the current communication between two GPUs to multiple GPUs communication.
+Second, we use asynchronous MPI send and synchronous MPI receive.
+Using asynchronous MPI receive would improve performance.
+This is also doable after we make GPU vector. As the original Gluon network does, 
+asynchronous messaging would be processed in the background.
+Third, GPUDirect RDMA can easily apply future optimizations of other techniques such as locality-aware memory management,
+memory reuse and pinned memory.

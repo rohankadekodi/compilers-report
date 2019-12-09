@@ -2,22 +2,19 @@
   \small
   \centering
   %\ra{1.3}
-  \begin{tabular}{@{}p{125pt}p{35pt}p{50pt}@{}}
+  \begin{tabular}{@{}p{60pt}p{35pt}p{35pt}p{35pt}p{35pt}@{}}
 %\begin{tabularx}{50pt}{@{}lrp{2cm}@{}}    
     \toprule[1.2pt]
-    Property & DRAM & Intel PM \\
+    Input Graphs   & Orig.   & Async. memcpy. & UVA & RDMA. \\
     \midrule
-    Sequential read latency (ns) &  81 & 169 (2.08\myx)\\
-    Random read latency (ns) &  81 & 305 (3.76\myx)\\
-    Store + flush + fence (ns) & 86 & 91 (1.05\myx)\\
-    \midrule
-    Read bandwidth (GB/s) & 120 & 39.4 (0.33\myx)\\
-    Write bandwidth (GB/s) & 80 & 13.9 (0.17\myx)\\
+    livejournal    &  \textbf{0.02s}  & \textbf{0.02s}      & 0.81s   & 0.81s \\
+    indochina-2004 &  0.005s & \textbf{0.003s}     & 0.93s   & 0.93s\\
+    twitter40      &  0.6s   & \textbf{0.58s}      & 19.23s  & 20.3s\\
+    road-USA       &  \textbf{1.8s}   & \textbf{1.8s}       & 12.5s   & 20s  \\
     \bottomrule[1.2pt]
    %\end{tabularx}
   \end{tabular}
-  \vspace{5pt} \mycaption{PM Performance}{The table shows performance
-    characteristics of DRAM, PM and the ratio of PM/DRAM, as reported by Izraelevitz et al.~\cite{pm-arxiv}.}
-  \label{tbl-pm}
+  \vspace{5pt} \mycaption{Runtime with each technique}{}
+  \label{tbl-op}
   \vspace{-15pt}
 \end{table}
